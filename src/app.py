@@ -52,3 +52,18 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, stratify=y, test_size=
 model = LogisticRegression() 
 model.fit(X_train, y_train) 
 y_pred = model.predict(X_test)
+
+#Hypertuning
+model = LogisticRegression()
+solvers = ['newton-cg', 'lbfgs', 'liblinear']
+penalty = ['l2'] 
+c_values = [100, 10, 1.0, 0.1, 0.01]
+
+grid = dict(solver=solvers,penalty=penalty,C=c_values)
+cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+grid_search = GridSearchCV(estimator=model, param_grid=grid, n_jobs=-1, cv=cv, scoring='recall',error_score=0)
+grid_result = grid_search.fit(X, y)
+
+optimized_model = LogisticRegression(C= 100, penalty='l2', solver= 'lbfgs')
+optimized_model.fit(X_train, y_train)
+y_pred_2 = optimized_model.predict(X_test)
